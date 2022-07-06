@@ -1,0 +1,5 @@
+[main]
+ignore_tests = true
+
+[report]
+out = ["Xml"]

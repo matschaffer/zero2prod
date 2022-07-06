@@ -8,4 +8,4 @@ FROM mcr.microsoft.com/vscode/devcontainers/rust:0-${VARIANT}
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive && \
     apt-get -y install --no-install-recommends lld clang && \
     rustup component add rls rust-analysis rust-src rustfmt clippy && \
-    cargo install cargo-edit cargo-watch
+    cargo install cargo-edit cargo-watch cargo-tarpaulin
