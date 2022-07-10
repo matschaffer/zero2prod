@@ -36,7 +36,8 @@
 				"mutantdino.resourcemonitor",
 				"rust-lang.rust-analyzer",
 				"tamasfe.even-better-toml",
-				"serayuzgur.crates"
+				"serayuzgur.crates",
+				"GitHub.copilot"
 			]
 		}
 	},
@@ -45,7 +46,7 @@
 	// "forwardPorts": [],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "cargo install cargo-edit cargo-watch cargo-tarpaulin",
+	"postCreateCommand": "cargo install cargo-edit cargo-watch cargo-tarpaulin cargo-expand",
 
 	// Comment out to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
 	"remoteUser": "vscode",
