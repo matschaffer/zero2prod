@@ -2,9 +2,8 @@
 ARG VARIANT="bullseye"
 FROM mcr.microsoft.com/vscode/devcontainers/rust:1-${VARIANT}
 
-RUN apt-get update && export DEBIAN_FRONTEND=noninteractive && \
-    apt-get -y install --no-install-recommends lld clang && \
-    rustup component add rls rust-analysis rust-src rustfmt clippy && \
-    rustup toolchain install nightly --allow-downgrade && \
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get -y install --no-install-recommends lld clang && \
     rustup toolchain install beta && \
-    rustup default beta
+    rustup default beta && \
+    rustup component add rls rust-analysis rust-src rustfmt clippy
