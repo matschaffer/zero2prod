@@ -7,6 +7,7 @@ RUN apt-get update && \
       postgresql-client \
       iftop \
     && \
+    rustup toolchain install nightly && \
     rustup toolchain install beta && \
     rustup default beta && \
     rustup component add rls rust-analysis rust-src rustfmt clippy
