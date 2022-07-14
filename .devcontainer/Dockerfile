@@ -5,6 +5,7 @@ RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get -y install --no-install-recommends \
       lld clang \
       postgresql-client \
+      iftop \
     && \
     rustup toolchain install beta && \
     rustup default beta && \
