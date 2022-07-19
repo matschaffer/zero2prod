@@ -1,12 +1,17 @@
-name: Security audit
+name: Security audit (scheduled)
+
 on:
   schedule:
     - cron: '0 0 * * *'
+
 jobs:
   audit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - uses: actions-rs/audit-check@v1
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Audit check
+        uses: actions-rs/audit-check@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
