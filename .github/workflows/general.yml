@@ -95,6 +95,7 @@ jobs:
           profile: minimal
           toolchain: beta
           override: true
+          components: rustfmt
 
       - name: Check format
         uses: actions-rs/cargo@v1
@@ -125,6 +126,7 @@ jobs:
           profile: minimal
           toolchain: beta
           override: true
+          components: clippy
 
       - name: Clippy
         uses: actions-rs/clippy-check@v1
