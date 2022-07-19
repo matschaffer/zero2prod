@@ -1,23 +1,58 @@
 use std::net::TcpListener;
 
-use sqlx::{Connection, PgConnection};
-use zero2prod::{configuration::get_configration, startup::run};
+use sqlx::{Connection, Executor, PgConnection, PgPool};
+use uuid::Uuid;
+use zero2prod::{
+    configuration::{get_configration, DatabaseSettings},
+    startup::run,
+};
 
-fn spawn_app() -> String {
+pub struct TestApp {
+    pub address: String,
+    pub db_pool: PgPool,
+}
+
+async fn spawn_app() -> TestApp {
     let listener = TcpListener::bind("127.0.0.1:0").expect("Failed to bind to port");
     let port = listener.local_addr().unwrap().port();
-    let server = run(listener).expect("Failed to start app");
+    let address = format!("http://127.0.0.1:{}", port);
+
+    let mut configuration = get_configration().expect("Failed to get configuration");
+    configuration.database.database_name = Uuid::new_v4().to_string();
+    let db_pool = configure_database(&configuration.database).await;
+
+    let server = run(listener, db_pool.clone()).expect("Failed to start app");
     tokio::spawn(server);
-    format!("http://127.0.0.1:{}", port)
+    TestApp { address, db_pool }
+}
+
+pub async fn configure_database(database: &DatabaseSettings) -> PgPool {
+    let mut connection = PgConnection::connect(&database.connection_string_without_db())
+        .await
+        .expect("Failed to connect to Postgres");
+    connection
+        .execute(format!(r#"CREATE DATABASE "{}""#, database.database_name).as_str())
+        .await
+        .expect("Failed to created database");
+
+    let connection_pool = PgPool::connect(&database.connection_string_without_db())
+        .await
+        .expect("Failed to connect to database");
+
+    sqlx::migrate!("./migrations")
+        .run(&connection_pool)
+        .await
+        .expect("Failed to migrate the database");
+    connection_pool
 }
 
 #[tokio::test]
 async fn health_check_works() {
-    let url = spawn_app();
+    let app = spawn_app().await;
     let client = reqwest::Client::new();
 
     let response = client
-        .get(&format!("{}/health_check", url))
+        .get(&format!("{}/health_check", app.address))
         .send()
         .await
         .expect("Failed to execute request");
@@ -28,17 +63,12 @@ async fn health_check_works() {
 
 #[tokio::test]
 async fn subscribe_returns_a_200_for_valid_form_data() {
-    let url = spawn_app();
-    let configuration = get_configration().expect("Failed to get configuration");
-    let connection_string = configuration.database.connection_string();
-    let mut connection = PgConnection::connect(&connection_string)
-        .await
-        .expect("Failed to connect to database");
+    let app = spawn_app().await;
     let client = reqwest::Client::new();
 
     let body = "name=le%20guin&email=ursula_le_guin%40gmail.com";
     let response = client
-        .post(&format!("{}/subscriptions", url))
+        .post(&format!("{}/subscriptions", app.address))
         .header("Content-Type", "application/x-www-form-urlencoded")
         .body(body)
         .send()
@@ -48,7 +78,7 @@ async fn subscribe_returns_a_200_for_valid_form_data() {
     assert_eq!(200, response.status().as_u16());
 
     let saved = sqlx::query!("SELECT email, name FROM subscriptions",)
-        .fetch_one(&mut connection)
+        .fetch_one(&app.db_pool)
         .await
         .expect("Failed to fetch subscription");
     assert_eq!(saved.email, "ursula_le_guin@gmail.com");
@@ -57,7 +87,7 @@ async fn subscribe_returns_a_200_for_valid_form_data() {
 
 #[tokio::test]
 async fn subscribe_returns_a_400_when_data_is_missing() {
-    let url = spawn_app();
+    let app = spawn_app().await;
     let client = reqwest::Client::new();
 
     let test_cases = vec![
@@ -67,7 +97,7 @@ async fn subscribe_returns_a_400_when_data_is_missing() {
     ];
     for (invalid_body, error_message) in test_cases {
         let response = client
-            .post(&format!("{}/subscriptions", url))
+            .post(&format!("{}/subscriptions", app.address))
             .header("Content-Type", "application/x-www-form-urlencoded")
             .body(invalid_body)
             .send()
