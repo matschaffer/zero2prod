@@ -35,7 +35,7 @@ pub async fn configure_database(database: &DatabaseSettings) -> PgPool {
         .await
         .expect("Failed to created database");
 
-    let connection_pool = PgPool::connect(&database.connection_string_without_db())
+    let connection_pool = PgPool::connect(&database.connection_string())
         .await
         .expect("Failed to connect to database");
 
