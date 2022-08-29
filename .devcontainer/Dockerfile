@@ -9,6 +9,7 @@ RUN \
   lld clang \
   postgresql-client \
   iftop \
+  pre-commit \
   && \
   rustup toolchain install nightly beta && \
   rustup default beta && \
