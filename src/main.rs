@@ -1,3 +1,4 @@
+use secrecy::ExposeSecret;
 use sqlx::PgPool;
 use zero2prod::telemetry::{get_subscriber, init_subscriber};
 use zero2prod::{configuration::get_configration, startup::run};
@@ -9,9 +10,10 @@ async fn main() -> std::io::Result<()> {
 
     let configuration = get_configration().expect("Failed to load configuration");
 
-    let connection_pool = PgPool::connect(&configuration.database.connection_string())
-        .await
-        .expect("Failed to connect to database");
+    let connection_pool =
+        PgPool::connect(configuration.database.connection_string().expose_secret())
+            .await
+            .expect("Failed to connect to database");
 
     let address = format!("127.0.0.1:{}", configuration.application_port);
     println!("Starting server on {}", address);
