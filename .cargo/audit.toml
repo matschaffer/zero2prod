@@ -2,4 +2,6 @@
 ignore = [
     # segfault in localtime_r via chrono - ignorable per https://github.com/chronotope/chrono/issues/602
     "RUSTSEC-2020-0071",
+    # ansi_term unmaintained - fix should come via https://github.com/tokio-rs/tracing/issues/2281
+    "RUSTSEC-2021-0139",
 ]
