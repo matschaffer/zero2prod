@@ -10,7 +10,7 @@ pub struct FormData {
 }
 
 #[tracing::instrument(
-    name = "Saving new subsriber details to the database",
+    name = "Saving new subscriber details to the database",
     skip(pool, form)
 )]
 pub async fn insert_subscriber(pool: &PgPool, form: &FormData) -> Result<(), sqlx::Error> {
