@@ -11,6 +11,13 @@
             "isBackground": true
         },
         {
+            "label": "cargo run log=trace",
+            "group": "build",
+            "type": "shell",
+            "command": "RUST_LOG=trace cargo run",
+            "isBackground": true
+        },
+        {
             "label": "cargo watch",
             "group": "build",
             "type": "shell",
