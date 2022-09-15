@@ -1,5 +1,6 @@
 /target
 cobertura.xml
+/.env
 /.envrc
 /.pgpass
 /.devcontainer/docker-compose.override.yml

@@ -1,0 +1,3 @@
+source_up
+dotenv
+export PGPASSFILE=$(pwd)/.pgpass
