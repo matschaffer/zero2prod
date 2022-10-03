@@ -1,5 +1,6 @@
 use secrecy::ExposeSecret;
 use sqlx::PgPool;
+use zero2prod::email_client::EmailClient;
 use zero2prod::telemetry::{get_subscriber, init_subscriber};
 use zero2prod::{configuration::get_configuration, startup::run};
 
@@ -14,6 +15,18 @@ async fn main() -> std::io::Result<()> {
         PgPool::connect_lazy(configuration.database.connection_string().expose_secret())
             .expect("Failed to connect to database");
 
+    let sender_email = configuration
+        .email_client
+        .sender()
+        .expect("Invalid sender_email configuration");
+    let timeout = configuration.email_client.timeout();
+    let email_client = EmailClient::new(
+        configuration.email_client.base_url,
+        sender_email,
+        configuration.email_client.authorization_token,
+        timeout,
+    );
+
     let address = format!(
         "{}:{}",
         configuration.application.host, configuration.application.port
@@ -21,5 +34,5 @@ async fn main() -> std::io::Result<()> {
     println!("Starting server on {}", address);
     let listener = std::net::TcpListener::bind(address)?;
 
-    run(listener, connection_pool)?.await
+    run(listener, connection_pool, email_client)?.await
 }

@@ -3,6 +3,7 @@ use secrecy::ExposeSecret;
 use sqlx::{Connection, Executor, PgConnection, PgPool};
 use std::net::TcpListener;
 use uuid::Uuid;
+use zero2prod::email_client::EmailClient;
 use zero2prod::{
     configuration::{get_configuration, DatabaseSettings},
     startup::run,
@@ -38,7 +39,19 @@ async fn spawn_app() -> TestApp {
     configuration.database.database_name = Uuid::new_v4().to_string();
     let db_pool = configure_database(&configuration.database).await;
 
-    let server = run(listener, db_pool.clone()).expect("Failed to start app");
+    let sender_email = configuration
+        .email_client
+        .sender()
+        .expect("Invalid sender_email configuration");
+    let timeout = configuration.email_client.timeout();
+    let email_client = EmailClient::new(
+        configuration.email_client.base_url,
+        sender_email,
+        configuration.email_client.authorization_token,
+        timeout,
+    );
+
+    let server = run(listener, db_pool.clone(), email_client).expect("Failed to start app");
     tokio::spawn(server);
     TestApp { address, db_pool }
 }
