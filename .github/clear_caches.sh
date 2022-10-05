@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 
-set -euxo pipefail
+set -euo pipefail
 
-for KEY in $(gh api /repos/matschaffer/zero2prod/actions/caches | jq -r '.actions_caches | .[].key'); do
-  gh api -X DELETE "/repos/matschaffer/zero2prod/actions/caches?key=${KEY}"
+REPO="$(gh repo view --json nameWithOwner -q ".nameWithOwner")"
+echo "Querying caches for: ${REPO}"
+
+for KEY in $(gh api "/repos/${REPO}/actions/caches" | jq -r '.actions_caches | .[].key'); do
+  echo "Deleting cache: ${KEY}"
+  gh api -X DELETE "/repos/${REPO}/actions/caches?key=${KEY}"
 done
