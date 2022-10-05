@@ -1,7 +1,7 @@
 [advisories]
 ignore = [
-    # segfault in localtime_r via chrono - ignorable per https://github.com/chronotope/chrono/issues/602
-    "RUSTSEC-2020-0071",
-    # ansi_term unmaintained - fix should come via https://github.com/tokio-rs/tracing/issues/2281
+    # https://rustsec.org/advisories/RUSTSEC-2021-0139 - ansi_term is Unmaintained
+    # needs close https://github.com/tokio-rs/tracing/issues/2282 or release https://github.com/tokio-rs/tracing/pull/2287
+    # possibly 0.3.16
     "RUSTSEC-2021-0139",
 ]
