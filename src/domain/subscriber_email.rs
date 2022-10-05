@@ -25,6 +25,7 @@ mod tests {
     use claim::assert_err;
     use fake::faker::internet::en::SafeEmail;
     use fake::Fake;
+    use quickcheck::{Arbitrary, Gen};
 
     #[test]
     fn empty_string_is_rejected() {
@@ -47,9 +48,9 @@ mod tests {
     #[derive(Debug, Clone)]
     struct ValidEmailFixture(pub String);
 
-    impl quickcheck::Arbitrary for ValidEmailFixture {
-        fn arbitrary<G: quickcheck::Gen>(g: &mut G) -> Self {
-            let email = SafeEmail().fake_with_rng(g);
+    impl Arbitrary for ValidEmailFixture {
+        fn arbitrary(_g: &mut Gen) -> Self {
+            let email = SafeEmail().fake();
             Self(email)
         }
     }
