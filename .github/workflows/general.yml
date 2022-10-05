@@ -4,8 +4,6 @@ on: [push, pull_request]
 
 env:
   CARGO_TERM_COLOR: always
-  SQLX_VERSION: 0.6.2
-  SQLX_FEATURES: postgres
   DATABASE_URL: postgres://postgres:password@localhost:5432/newsletter
 
 jobs:
@@ -50,20 +48,11 @@ jobs:
           path: |
             ~/.cargo/bin/sqlx
             ~/.cargo/bin/cargo-sqlx
-          key: ${{ runner.os }}-sqlx-${{ env.SQLX_VERSION }}-${{ env.SQLX_FEATURES }}
+          key: ${{ runner.os }}-sqlx-${{ hashFiles('.github/install_sqlx_cli.sh') }}
 
       - name: Install sqlx-cli
-        uses: actions-rs/cargo@v1
         if: steps.cache-sqlx.outputs.cache-hit == false
-        with:
-          command: install
-          args: >
-            sqlx-cli
-            --force
-            --version=${{ env.SQLX_VERSION }}
-            --features=${{ env.SQLX_FEATURES }}
-            --no-default-features
-            --locked
+        run: .github/install_sqlx_cli.sh
 
       - name: Migrate database
         run: |
@@ -149,20 +138,12 @@ jobs:
         with:
           path: |
             ~/.cargo/bin/sqlx
-          key: ${{ runner.os }}-sqlx-${{ env.SQLX_VERSION }}-${{ env.SQLX_FEATURES }}
+            ~/.cargo/bin/cargo-sqlx
+          key: ${{ runner.os }}-sqlx-${{ hashFiles('.github/install_sqlx_cli.sh') }}
 
       - name: Install sqlx-cli
-        uses: actions-rs/cargo@v1
         if: steps.cache-sqlx.outputs.cache-hit == false
-        with:
-          command: install
-          args: >
-            sqlx-cli
-            --force
-            --version=${{ env.SQLX_VERSION }}
-            --features=${{ env.SQLX_FEATURES }}
-            --no-default-features
-            --locked
+        run: .github/install_sqlx_cli.sh
 
       - name: Migrate database
         run: |
@@ -214,20 +195,12 @@ jobs:
         with:
           path: |
             ~/.cargo/bin/sqlx
-          key: ${{ runner.os }}-sqlx-${{ env.SQLX_VERSION }}-${{ env.SQLX_FEATURES }}
+            ~/.cargo/bin/cargo-sqlx
+          key: ${{ runner.os }}-sqlx-${{ hashFiles('.github/install_sqlx_cli.sh') }}
 
       - name: Install sqlx-cli
-        uses: actions-rs/cargo@v1
         if: steps.cache-sqlx.outputs.cache-hit == false
-        with:
-          command: install
-          args: >
-            sqlx-cli
-            --force
-            --version=${{ env.SQLX_VERSION }}
-            --features=${{ env.SQLX_FEATURES }}
-            --no-default-features
-            --locked
+        run: .github/install_sqlx_cli.sh
 
       - name: Migrate database
         run: |
