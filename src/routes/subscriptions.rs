@@ -14,34 +14,6 @@ pub struct FormData {
     name: String,
 }
 
-#[tracing::instrument(
-    name = "Saving new subscriber details to the database",
-    skip(pool, new_subscriber)
-)]
-pub async fn insert_subscriber(
-    pool: &mut Transaction<'_, Postgres>,
-    new_subscriber: &NewSubscriber,
-) -> Result<Uuid, sqlx::Error> {
-    let subscriber_id = Uuid::new_v4();
-    sqlx::query!(
-        r#"
-        INSERT INTO subscriptions (id, email, name, subscribed_at, status)
-        VALUES ($1, $2, $3, $4, 'pending_confirmation')
-        "#,
-        subscriber_id,
-        new_subscriber.email.as_ref(),
-        new_subscriber.name.as_ref(),
-        Utc::now()
-    )
-    .execute(pool)
-    .await
-    .map_err(|e| {
-        tracing::error!("Failed to execute query {:?}", e);
-        e
-    })?;
-    Ok(subscriber_id)
-}
-
 impl TryFrom<FormData> for NewSubscriber {
     type Error = String;
 
@@ -109,6 +81,42 @@ pub async fn subscribe(
 }
 
 #[tracing::instrument(
+    name = "Saving new subscriber details to the database",
+    skip(pool, new_subscriber)
+)]
+pub async fn insert_subscriber(
+    pool: &mut Transaction<'_, Postgres>,
+    new_subscriber: &NewSubscriber,
+) -> Result<Uuid, sqlx::Error> {
+    let subscriber_id = Uuid::new_v4();
+    sqlx::query!(
+        r#"
+        INSERT INTO subscriptions (id, email, name, subscribed_at, status)
+        VALUES ($1, $2, $3, $4, 'pending_confirmation')
+        "#,
+        subscriber_id,
+        new_subscriber.email.as_ref(),
+        new_subscriber.name.as_ref(),
+        Utc::now()
+    )
+    .execute(pool)
+    .await
+    .map_err(|e| {
+        tracing::error!("Failed to execute query {:?}", e);
+        e
+    })?;
+    Ok(subscriber_id)
+}
+
+fn generate_subscription_token() -> String {
+    let mut rng = thread_rng();
+    std::iter::repeat_with(|| rng.sample(Alphanumeric))
+        .map(char::from)
+        .take(25)
+        .collect()
+}
+
+#[tracing::instrument(
     name = "Store subscription token in the database",
     skip(pool, subscription_token)
 )]
@@ -132,14 +140,6 @@ pub async fn store_token(
         e
     })?;
     Ok(())
-}
-
-fn generate_subscription_token() -> String {
-    let mut rng = thread_rng();
-    std::iter::repeat_with(|| rng.sample(Alphanumeric))
-        .map(char::from)
-        .take(25)
-        .collect()
 }
 
 #[tracing::instrument(
