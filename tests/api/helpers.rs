@@ -64,6 +64,14 @@ impl TestApp {
         let plain_text = get_link(&body["TextBody"].as_str().unwrap());
         ConfirmationLinks { html, plain_text }
     }
+
+    pub async fn get_confirmation(&self, link: reqwest::Url) -> reqwest::Response {
+        reqwest::Client::new()
+            .get(link)
+            .send()
+            .await
+            .expect("Failed to execute request.")
+    }
 }
 
 pub async fn spawn_app() -> TestApp {
