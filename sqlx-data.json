@@ -20,6 +20,37 @@
     },
     "query": "\n        SELECT subscriber_id FROM subscription_tokens\n        WHERE subscription_token = $1\n        "
   },
+  "753c8ecfac0ea7d052e60cb582e3b3ebac5e50eb133152712ca18ab5d5e202f3": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Uuid"
+        ]
+      }
+    },
+    "query": "\n    INSERT INTO subscription_tokens (subscription_token, subscriber_id)\n    VALUES ($1, $2)\n        "
+  },
+  "7b57e2776a245ba1602f638121550485e2219a6ccaaa62b5ec3e4683e33a3b5f": {
+    "describe": {
+      "columns": [
+        {
+          "name": "email",
+          "ordinal": 0,
+          "type_info": "Text"
+        }
+      ],
+      "nullable": [
+        false
+      ],
+      "parameters": {
+        "Left": []
+      }
+    },
+    "query": "\n        SELECT email\n        FROM subscriptions\n        WHERE status = 'confirmed'\n        "
+  },
   "be6a02c098be084a45cb6414d64965896e534ae2ec8229f1b73fa7d323f2fbe4": {
     "describe": {
       "columns": [],
@@ -46,18 +77,5 @@
       }
     },
     "query": "\n        INSERT INTO subscriptions (id, email, name, subscribed_at, status)\n        VALUES ($1, $2, $3, $4, 'pending_confirmation')\n        "
-  },
-  "fa625c0844ec26b7f59ce885d6fe0b9a4f4676946706cb926c21da6ab1b89d90": {
-    "describe": {
-      "columns": [],
-      "nullable": [],
-      "parameters": {
-        "Left": [
-          "Text",
-          "Uuid"
-        ]
-      }
-    },
-    "query": "\n        INSERT INTO subscription_tokens (subscription_token, subscriber_id)\n        VALUES ($1, $2)\n        "
   }
 }
