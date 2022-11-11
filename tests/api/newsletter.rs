@@ -22,7 +22,7 @@ async fn newsletters_are_not_delivered_to_unconfirmed_subscribers() {
     });
 
     let response = reqwest::Client::new()
-        .post(&format!("{}/newletters", &app.address))
+        .post(&format!("{}/newsletters", &app.address))
         .json(&newsletter_request_body)
         .send()
         .await
@@ -45,3 +45,4 @@ async fn create_unconfirmed_subscriber(app: &TestApp) {
         .error_for_status()
         .unwrap();
 }
+
