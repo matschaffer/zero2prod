@@ -11,7 +11,6 @@ use sqlx::{PgPool, Postgres, Transaction};
 use std::convert::{TryFrom, TryInto};
 use uuid::Uuid;
 
-
 #[derive(thiserror::Error)]
 pub enum SubscribeError {
     #[error("{0}")]

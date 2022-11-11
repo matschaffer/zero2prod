@@ -7,8 +7,8 @@ use sqlx::PgPool;
 use std::net::TcpListener;
 use tracing_actix_web::TracingLogger;
 
-use crate::routes::{subscribe, publish_newsletter};
 use crate::routes::{confirm, health_check};
+use crate::routes::{publish_newsletter, subscribe};
 
 pub struct ApplicationBaseUrl(pub String);
 

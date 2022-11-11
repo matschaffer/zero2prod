@@ -1,4 +1,7 @@
-use wiremock::{Mock, matchers::{method, path, any}, ResponseTemplate};
+use wiremock::{
+    matchers::{any, method, path},
+    Mock, ResponseTemplate,
+};
 
 use crate::helpers::{spawn_app, TestApp};
 
@@ -45,4 +48,3 @@ async fn create_unconfirmed_subscriber(app: &TestApp) {
         .error_for_status()
         .unwrap();
 }
-
