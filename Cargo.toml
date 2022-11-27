@@ -13,6 +13,7 @@ name = "zero2prod"
 [dependencies]
 actix-web = "4"
 anyhow = "1.0.66"
+argon2 = { version = "0.4.1", features=["std"] }
 base64 = "0.13.1"
 # Can use default features after 0.4.22 release (https://github.com/chronotope/chrono/issues/602)
 chrono = { version = "0.4", default-features = false, features = ["clock"] }
