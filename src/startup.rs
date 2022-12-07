@@ -7,7 +7,8 @@ use sqlx::PgPool;
 use std::net::TcpListener;
 use tracing_actix_web::TracingLogger;
 
-use crate::routes::{confirm, health_check};
+use crate::routes::{confirm, health_check, login};
+use crate::routes::{home, login_form};
 use crate::routes::{publish_newsletter, subscribe};
 
 pub struct ApplicationBaseUrl(pub String);
@@ -29,6 +30,9 @@ pub fn run(
             .route("/subscriptions", web::post().to(subscribe))
             .route("/subscriptions/confirm", web::get().to(confirm))
             .route("/newsletters", web::post().to(publish_newsletter))
+            .route("/login", web::get().to(login_form))
+            .route("/login", web::post().to(login))
+            .route("/", web::get().to(home))
             .app_data(connection.clone())
             .app_data(email_client.clone())
             .app_data(base_url.clone())
