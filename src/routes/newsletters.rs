@@ -69,17 +69,13 @@ fn basic_authentication(headers: &HeaderMap) -> Result<Credentials, anyhow::Erro
     let decoded_bytes = base64::decode_config(base64encoded_segment, base64::STANDARD)?;
     let decoded_credentials = String::from_utf8(decoded_bytes)?;
 
-    if let [username, password] = decoded_credentials
-        .splitn(2, ':')
-        .collect::<Vec<&str>>()
-        .as_slice()
-    {
-        Ok(Credentials {
+    let credentials: Vec<&str> = decoded_credentials.splitn(2, ':').collect();
+    match credentials.as_slice() {
+        [username, password] => Ok(Credentials {
             username: username.to_string(),
             password: Secret::new(password.to_string()),
-        })
-    } else {
-        Err(anyhow::anyhow!("Bad header"))
+        }),
+        _ => Err(anyhow::anyhow!("Bad header")),
     }
 }
 
